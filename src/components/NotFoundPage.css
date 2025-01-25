@@ -1,0 +1,43 @@
+/* NotFoundPage.css */
+* {
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  /* overflow: hidden;  */
+}
+
+.not-found-container {
+  text-align: center;
+  padding: 100px 20px; 
+  background-color: #f0f0f0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; 
+  align-items: center;
+  opacity: 0;
+  animation: fadeIn 1s forwards;
+}
+
+.not-found-title {
+  font-size: 100px;
+  color: #333;
+  margin-bottom: 10px; 
+}
+
+.not-found-message {
+  font-size: 24px;
+  color: #666;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}

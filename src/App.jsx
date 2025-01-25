@@ -7,6 +7,7 @@ import StudentPage from "./components/StudentPage";
 import LoginPage from './Login/LoginPage.jsx';
 import NotFoundPage from "./components/NotFoundPage.jsx";
 import "./App.css";
+import RegisterPage from "./Login/RegisterPage.jsx";
 
 const App = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -47,7 +48,7 @@ const AppContent = ({ toggleSidebar, isSidebarOpen, setIsSidebarOpen }) => {
         }}
       >
         {/* Show hamburger icon only if the sidebar is not open and we are not on /login */}
-        {location.pathname === "/home" && !isSidebarOpen && (
+        {location.pathname === "/dashboard" && !isSidebarOpen && (
           <IconButton
             onClick={toggleSidebar}
             sx={{
@@ -63,8 +64,9 @@ const AppContent = ({ toggleSidebar, isSidebarOpen, setIsSidebarOpen }) => {
 
         {/* Routes */}
         <Routes>
-          <Route path="/" element={<LoginPage />} />
-          <Route path="/home" element={<StudentPage />} />
+          <Route path="/" element={<RegisterPage/>} />
+          <Route path="/dashboard" element={<StudentPage />} />
+          <Route path="/register" element={<RegisterPage/>} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>

@@ -1,11 +1,9 @@
 import React, { useState } from "react";
 import {
-  signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   getAuth,
   GoogleAuthProvider,
   signInWithPopup,
-  GithubAuthProvider,
 } from "firebase/auth";
 import { app } from "../firebase.js";
 import {
@@ -24,88 +22,71 @@ import LockIcon from "@mui/icons-material/Lock";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import GoogleIcon from "@mui/icons-material/Google";
-import GitHubIcon from "@mui/icons-material/GitHub";
-import TwitterIcon from "@mui/icons-material/Twitter"; // Twitter logo
 import { NavLink, useNavigate } from "react-router-dom";
 
 const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
-const githubProvider = new GithubAuthProvider();
 
-const LoginPage = () => {
+const RegisterPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState(false);
-  const navigate = useNavigate();
+  const navigate = useNavigate(); // Initialize the useNavigate hook
 
   const handleTogglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
-  const handleSignIn = () => {
+  const handleRegister = () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  
+
     if (!emailRegex.test(email)) {
       setError("Invalid email address.");
       return;
     }
-  
+
     if (password.length < 6) {
       setError("Password must be at least 6 characters long.");
       return;
     }
-  
+
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
+
     setError(""); // Clear any existing errors
-  
-    signInWithEmailAndPassword(auth, email, password)
+
+    createUserWithEmailAndPassword(auth, email, password)
       .then(() => {
         setSuccessMessage(true);
-        setEmail("");
-        setPassword("");
-        navigate("/dashboard"); // Redirect to the dashboard or home page
+        setTimeout(() => {
+          navigate("/login"); // Redirect to login after success
+        }, 3000); // Delay to show success message
       })
       .catch((error) => {
         console.error("Firebase error: ", error);
-        switch (error.code) {
-          case "auth/user-not-found":
-            setError("No user found with this email. Please register first.");
-            break;
-          case "auth/wrong-password":
-            setError("Incorrect password. Please try again.");
-            break;
-          case "auth/invalid-email":
-            setError("Invalid email format. Please check your email address.");
-            break;
-          case "auth/too-many-requests":
-            setError(
-              "Too many failed attempts. Please try again later or reset your password."
-            );
-            break;
-          default:
-            setError("An unexpected error occurred. Please try again.");
-        }
+        setError(error.message || "An unexpected error occurred.");
       });
-  };  
-
-  const signupWithGoogle = () => {
-    signInWithPopup(auth, googleProvider).catch((error) => {
-      console.error("Google sign-in error: ", error);
-      setError("Google sign-in failed. Please try again.");
-    });
   };
 
-  const signupWithGithub = () => {
-    signInWithPopup(auth, githubProvider).catch((error) => {
-      console.error("GitHub sign-in error: ", error);
-      setError("GitHub sign-in failed. Please try again.");
-    });
+  const signupWithGoogle = () => {
+    signInWithPopup(auth, googleProvider)
+      .then(() => {
+        navigate("/dashboard"); // Redirect to dashboard or home after successful sign-in
+      })
+      .catch((error) => {
+        console.error("Google sign-in error: ", error);
+        setError("Google sign-in failed. Please try again.");
+      });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    handleSignIn();
+    handleRegister();
   };
 
   return (
@@ -117,7 +98,7 @@ const LoginPage = () => {
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
       >
         <Alert onClose={() => setSuccessMessage(false)} severity="success">
-          Login Successful!
+          Registration Successful! Redirecting to login...
         </Alert>
       </Snackbar>
 
@@ -131,11 +112,6 @@ const LoginPage = () => {
           borderRadius: 2,
           boxShadow: 10,
           backgroundColor: "#ffffff",
-          transition: "transform 0.3s ease, box-shadow 0.3s ease-in-out",
-          "&:hover": {
-            transform: "scale(1.02)",
-            boxShadow: "0px 20px 40px rgba(0, 0, 0, 0.2)",
-          },
         }}
       >
         <Typography
@@ -144,7 +120,7 @@ const LoginPage = () => {
           gutterBottom
           sx={{ fontWeight: 700, color: "#1976d2" }}
         >
-          Sign In
+          Register
         </Typography>
 
         <TextField
@@ -174,9 +150,7 @@ const LoginPage = () => {
             setPassword(e.target.value);
             setError(""); // Clear error on typing
           }}
-          error={!!error}
-          helperText={error}
-          sx={{ marginBottom: 3 }}
+          sx={{ marginBottom: 2 }}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
@@ -188,19 +162,29 @@ const LoginPage = () => {
                 <IconButton
                   onClick={handleTogglePasswordVisibility}
                   edge="end"
-                  sx={{
-                    padding: 0,
-                    backgroundColor: "transparent",
-                    "&:hover": {
-                      backgroundColor: "transparent",
-                    },
-                    "&:focus": {
-                      backgroundColor: "transparent",
-                    },
-                  }}
                 >
                   {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
                 </IconButton>
+              </InputAdornment>
+            ),
+          }}
+        />
+        <TextField
+          label="Confirm Password"
+          type={showPassword ? "text" : "password"}
+          fullWidth
+          value={confirmPassword}
+          onChange={(e) => {
+            setConfirmPassword(e.target.value);
+            setError(""); // Clear error on typing
+          }}
+          error={!!error}
+          helperText={error}
+          sx={{ marginBottom: 3 }}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <LockIcon color="action" />
               </InputAdornment>
             ),
           }}
@@ -216,78 +200,34 @@ const LoginPage = () => {
             fontWeight: 600,
             borderRadius: 50,
             textTransform: "none",
-            boxShadow: "0px 6px 15px rgba(0, 0, 0, 0.1)",
-            "&:hover": {
-              boxShadow: "0px 10px 20px rgba(0, 0, 0, 0.2)",
-            },
           }}
         >
-          Sign In
+          Register
         </Button>
 
         <Typography variant="body2" align="center" sx={{ marginTop: 2 }}>
           OR
         </Typography>
 
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            marginTop: 2,
-          }}
-        >
-          <Button
-            onClick={signupWithGoogle}
-            variant="outlined"
-            startIcon={<GoogleIcon />}
-            fullWidth
-            sx={{
-              borderRadius: 50,
-              fontWeight: 600,
-              textTransform: "none",
-              padding: "10px 0",
-              marginRight: 1,
-            }}
-          >
-            Google
-          </Button>
-
-          <Button
-            onClick={signupWithGithub}
-            variant="outlined"
-            startIcon={<GitHubIcon />}
-            fullWidth
-            sx={{
-              borderRadius: 50,
-              fontWeight: 600,
-              textTransform: "none",
-              padding: "10px 0",
-              marginLeft: 1,
-            }}
-          >
-            GitHub
-          </Button>
-        </Box>
-
         <Button
+          onClick={signupWithGoogle}
           variant="outlined"
-          startIcon={<TwitterIcon />}
+          startIcon={<GoogleIcon />}
           fullWidth
           sx={{
             marginTop: 2,
+            padding: "10px 0",
             borderRadius: 50,
             fontWeight: 600,
-            textTransform: "none",
-            padding: "10px 0",
           }}
         >
-          X (Twitter)
+          Sign in with Google
         </Button>
 
         <Typography variant="body2" align="center" sx={{ marginTop: 2 }}>
-          Don’t have an account?{" "}
-          <NavLink to="/register" style={{ textDecoration: "none", color: "#1976d2" }}>
-            Register
+          Already have an account?{" "}
+          <NavLink to="/login" style={{ textDecoration: "none", color: "#1976d2" }}>
+            Login
           </NavLink>
         </Typography>
       </Box>
@@ -295,4 +235,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default RegisterPage;

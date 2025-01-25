@@ -89,11 +89,16 @@ const LoginPage = () => {
   };
 
   const signupWithGoogle = () => {
-    signInWithPopup(auth, googleProvider).catch((error) => {
-      console.error("Google sign-in error: ", error);
-      setError("Google sign-in failed. Please try again.");
-    });
+    signInWithPopup(auth, googleProvider)
+      .then((result) => {
+        console.log('Google Sign-in Success:', result);
+      })
+      .catch((error) => {
+        console.error('Google sign-in error: ', error);
+        setError("Google sign-in failed. Please try again.");
+      });
   };
+  
 
   const signupWithGithub = () => {
     signInWithPopup(auth, githubProvider).catch((error) => {

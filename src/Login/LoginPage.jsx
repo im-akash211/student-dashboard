@@ -184,7 +184,7 @@ const LoginView = () => {
             ),
           }}
         />
-        <NavLink to="/students">
+        <NavLink to="/home">
           <Button
             type="submit"
             variant="contained"

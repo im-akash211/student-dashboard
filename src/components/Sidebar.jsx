@@ -22,7 +22,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
       <h3>Menu</h3>
       <ul className="sidebar-list">
         <li>
-          <Link to="/students" className="sidebar-link">Students Page</Link>
+          <Link to="/home" className="sidebar-link">Students Page</Link>
         </li>
         <li>
           <Link to="/login" className="sidebar-link">Logout</Link>

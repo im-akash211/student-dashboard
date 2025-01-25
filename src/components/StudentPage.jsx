@@ -154,8 +154,8 @@ const StudentPage = () => {
   );
 
   return (
-    <Box p={3}>
-      <h1>Student List</h1>
+    <Box p={7}>
+      <h1 >Student List</h1>
       <Button
         variant="contained"
         color="primary"

@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import {
   signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
   getAuth,
   GoogleAuthProvider,
   signInWithPopup,
@@ -25,7 +24,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import GoogleIcon from "@mui/icons-material/Google";
 import GitHubIcon from "@mui/icons-material/GitHub";
-import TwitterIcon from "@mui/icons-material/Twitter"; // Twitter logo
+import TwitterIcon from "@mui/icons-material/Twitter";
 import { NavLink, useNavigate } from "react-router-dom";
 
 const auth = getAuth(app);
@@ -46,25 +45,25 @@ const LoginPage = () => {
 
   const handleSignIn = () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  
+
     if (!emailRegex.test(email)) {
-      setError("Invalid email address.");
+      setError("Invalid email address format. Please enter a valid email.");
       return;
     }
-  
+
     if (password.length < 6) {
       setError("Password must be at least 6 characters long.");
       return;
     }
-  
+
     setError(""); // Clear any existing errors
-  
+
     signInWithEmailAndPassword(auth, email, password)
       .then(() => {
         setSuccessMessage(true);
         setEmail("");
         setPassword("");
-        navigate("/dashboard"); // Redirect to the dashboard or home page
+        setTimeout(() => navigate("/dashboard"), 1000); // Redirect after a successful login
       })
       .catch((error) => {
         console.error("Firebase error: ", error);
@@ -84,10 +83,10 @@ const LoginPage = () => {
             );
             break;
           default:
-            setError("An unexpected error occurred. Please try again.");
+            setError("Entered wrong email or password. Please try again.");
         }
       });
-  };  
+  };
 
   const signupWithGoogle = () => {
     signInWithPopup(auth, googleProvider).catch((error) => {
@@ -112,7 +111,7 @@ const LoginPage = () => {
     <Container maxWidth="xs" sx={{ marginTop: 5 }}>
       <Snackbar
         open={successMessage}
-        autoHideDuration={3000}
+        autoHideDuration={1000}
         onClose={() => setSuccessMessage(false)}
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
       >

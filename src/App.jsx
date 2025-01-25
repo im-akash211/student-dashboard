@@ -64,7 +64,7 @@ const AppContent = ({ toggleSidebar, isSidebarOpen, setIsSidebarOpen }) => {
 
         {/* Routes */}
         <Routes>
-          <Route path="/" element={<RegisterPage/>} />
+          <Route path="/" element={<LoginPage />} />
           <Route path="/dashboard" element={<StudentPage />} />
           <Route path="/register" element={<RegisterPage/>} />
           <Route path="/login" element={<LoginPage />} />
